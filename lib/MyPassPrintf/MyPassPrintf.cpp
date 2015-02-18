@@ -39,8 +39,7 @@ namespace{
 
         MyPassPrintf(): ModulePass(ID) {}
 
-        /* define a extern function "fprintf"
-         * int fprintf ( FILE * stream, const char * format, ... ); */
+        /* define a extern function "fprintf" */
          virtual Function* getfprint(Module &mod, LLVMContext& ctx , vector<Value*> args) {
             vector<Type*> argsTypes;
 
@@ -51,7 +50,7 @@ namespace{
                 argsTypes.push_back(args[i]->getType());
             }
 
-            /* create fprintf function */
+            // create fprintf function
             FPrintf = mod.getOrInsertFunction("fprintf",
                                         FunctionType::get(Type::getInt32Ty(ctx),
                                                         argsTypes,
@@ -59,8 +58,6 @@ namespace{
 
             Function *func_fprintf = cast<Function>(FPrintf);
             func_fprintf->setCallingConv(CallingConv::C);
-
-            errs()<< "func_fprintf:"<<*func_fprintf <<"\n";
 
             return func_fprintf;
         }
@@ -73,7 +70,7 @@ namespace{
             if(dyn_cast<AllocaInst> (inst)) {
                 errs() << "INSERT INTO MAIN ENTRY"<< *inst <<"\n";
 
-                /* FILE * pFile; */
+                // FILE * pFile;
                 IO_FILE_ty = StructType::create(M.getContext(), "struct._IO_FILE");
                 IO_FILE_PTR_ty = PointerType::getUnqual(IO_FILE_ty);
 
@@ -100,7 +97,7 @@ namespace{
 
                 errs() << "pFile" << *pFile<<  "\n";
 
-                /* FILE * fopen ( const char * , const char *  ); */
+                // FILE * fopen ( const char * , const char *  );
                 std::vector<Type*> Params;
                 Params.push_back(PointerType::getUnqual(Type::getInt8PtrTy(F.getContext())));
                 Params.push_back(PointerType::getUnqual(Type::getInt8PtrTy(F.getContext())));
@@ -115,9 +112,7 @@ namespace{
 
                 errs()<< "func_fopen:"<<*func_fopen <<"\n";
 
-                //
                 //Create a global string variable with the file's name
-                //
                 Constant* strfileConstant = ConstantDataArray::getString(
                                                                 M.getContext(),
                                                                 "test.txt",
@@ -136,9 +131,7 @@ namespace{
                 Constant* constArrayF = ConstantExpr::getInBoundsGetElementPtr(fileStr, constZeroF);
                 Value* filePtr = ConstantExpr::getBitCast(constArrayF, PointerType::getUnqual(Type::getInt8Ty(M.getContext())));
 
-                //
                 //Create a global strin g variable with the format's name
-                //
                 Constant* strFormatConstant = ConstantDataArray::getString( M.getContext(),
                                                                             "w+",
                                                                             true);
@@ -152,7 +145,7 @@ namespace{
                                                 strFormatConstant,
                                                 "w+");
 
-                //Get the int8ptr to our message
+                // Get the int8ptr to our message
                 Constant* constZeroFmt  = ConstantInt::get(Type::getInt32Ty(M.getContext()), 0);
                 Constant* constArrayFmt = ConstantExpr::getInBoundsGetElementPtr(formatStr, constZeroFmt);
                 Value* fmtPtr = ConstantExpr::getBitCast(constArrayFmt, PointerType::getUnqual(Type::getInt8Ty(M.getContext())));
@@ -169,11 +162,9 @@ namespace{
         }
 
         virtual bool insertOnMainEndBlock(BasicBlock &F, Module &M) {
-
             Instruction *inst = F.getTerminator();
-            errs() << "INSERT INTO MAIN END"<< *inst <<"\n";
 
-            /* int fclose(FILE*); */
+            // int fclose(FILE*);
             Value* const_fclose = M.getOrInsertFunction("fclose",
                                                 Type::getInt32Ty(F.getContext()),
                                                         IO_FILE_PTR_ty,
@@ -181,14 +172,10 @@ namespace{
 
             Function *func_fclose = cast<Function>(const_fclose);
 
-            errs()<< "func_fclose:"<<*func_fclose <<"\n";
-
             CallInst* int32_call3 = CallInst::Create(func_fclose,
                                                     pFile,
                                                     "",
                                                     inst);
-
-            errs()<< "int32_call3:"<<*int32_call3 <<"\n";
 
             int32_call3->setCallingConv(CallingConv::C);
             int32_call3->setTailCall(true);
@@ -220,7 +207,6 @@ namespace{
 
         Instruction* getNextInstruction(Instruction& i) {
             BasicBlock::iterator it(&i);
-        //    it++;
             return it;
         }
 
@@ -235,9 +221,7 @@ namespace{
                     // We know we've encountered a call instruction, so we
                     // need to determine if it's a call to printf or not.
                     if(CF->getName() == "printf") {
-                        errs()<< ".. found printf: "<<*CF << "\n";
                         ++counter;
-                        errs()<< counter<< "\n";
 
                         vector<Value*> args;
                         args.push_back(pFile);
@@ -260,8 +244,6 @@ namespace{
                                                                 nextInstruction);
                         fprintfCall->setCallingConv(CallingConv::C);
                         fprintfCall->setTailCall(true);
-
-                        errs()<<"fprintfCall:"<< *fprintfCall <<"\n";
                     }
                 }
             }
