@@ -36,7 +36,6 @@ namespace{
         CallInst* ptr_call;
         int counter=0;
 
-
         MyPassPrintf(): ModulePass(ID) {}
 
         /* define a extern function "fprintf" */
@@ -68,8 +67,6 @@ namespace{
             Instruction *inst = F.getFirstNonPHI();
 
             if(dyn_cast<AllocaInst> (inst)) {
-                errs() << "INSERT INTO MAIN ENTRY"<< *inst <<"\n";
-
                 // FILE * pFile;
                 IO_FILE_ty = StructType::create(M.getContext(), "struct._IO_FILE");
                 IO_FILE_PTR_ty = PointerType::getUnqual(IO_FILE_ty);
@@ -95,8 +92,6 @@ namespace{
                                         NULL,
                                         "pFile");
 
-                errs() << "pFile" << *pFile<<  "\n";
-
                 // FILE * fopen ( const char * , const char *  );
                 std::vector<Type*> Params;
                 Params.push_back(PointerType::getUnqual(Type::getInt8PtrTy(F.getContext())));
@@ -110,8 +105,6 @@ namespace{
 
                 Function *func_fopen = cast<Function>(const_fopen);
 
-                errs()<< "func_fopen:"<<*func_fopen <<"\n";
-
                 //Create a global string variable with the file's name
                 Constant* strfileConstant = ConstantDataArray::getString(
                                                                 M.getContext(),
@@ -124,7 +117,6 @@ namespace{
                                                     llvm::GlobalValue::InternalLinkage,
                                                     strfileConstant,
                                                     "testTxt");
-                errs()<< "fileStr:"<<*fileStr <<"\n";
 
                 //Get the int8ptr to our message
                 Constant* constZeroF = ConstantInt::get(Type::getInt32Ty(M.getContext()), 0);
@@ -135,8 +127,6 @@ namespace{
                 Constant* strFormatConstant = ConstantDataArray::getString( M.getContext(),
                                                                             "w+",
                                                                             true);
-
-                errs()<< "strFormatConstant:"<<*strFormatConstant <<"\n";
 
                 GlobalVariable* formatStr = new GlobalVariable(M,
                                                 strFormatConstant->getType(),
@@ -155,8 +145,6 @@ namespace{
                 args.push_back(fmtPtr);
 
                 pFile = CallInst::Create(func_fopen, args, "", inst->getNextNode());
-                errs()<< "pFile:"<<*pFile <<"\n";
-
             }
             return true;
         }
