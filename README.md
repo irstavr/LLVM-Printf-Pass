@@ -3,9 +3,9 @@
 For a taste of the most widely used compilers, we implemented a simple pass  
 inside LLVM to output on a file everything that is printf­ed on the stdout. 
 
-LLVM 
+## LLVM ##
  
-Install Clang + LLVM 
+### Install Clang + LLVM ###
  
 LLVM (http://www.llvm.org) is a modern compiler infrastructure widely used in 
 both academia and industry. CLang is a LLVM front end. Here we use Clang+LLVM 3.4. 
@@ -14,7 +14,7 @@ It is not the most recent LLVM but it was sufficient for our project.
 We checked out Clang+LLVM source code, compiled and installed it on our system. 
  
  
-Add the MyPassPrintf pass 
+### Add the MyPassPrintf pass ###
  
 In the path /lib/MyPassPrintf you are provided with a file MyPassPrintf.cpp, 
 which has code to first add a call fopen() at the beginning of the main function, 
