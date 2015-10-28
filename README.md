@@ -24,5 +24,3 @@ at the exit of the program.
  
 Put this file into {llvm­project}/{llvm­source­code}/lib/Transforms/MyPassPrintf 
  
-For testing, we use the test file in directory 
-/build/lib/Transforms/MyPassPrintf/mypasstest.c
